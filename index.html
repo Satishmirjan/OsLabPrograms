@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expandable Program List</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="pc" id="program1a">
+        <div class="pt">Program 1a</div>
+        <div class="p_code">
+           
+            <pre><code>#https://www.onlinegdb.com/online_bash_shell
+                #use the above link to run shell srcipt 
+                
+                #!/bin/bash
+                
+                #read the number 
+                echo "Enter a number: "
+                read number
+                
+                # Reverse the number 
+                reversed=$(echo "$number" | rev)
+                
+                # Check it is palindrome or not
+                if [ "$number" -eq "$reversed" ]; then
+                    echo "$number is a palindrome."
+                else
+                    echo "$number is not a palindrome."
+                fi</code></pre>
+        </div>
+    </div>
+    <div class="pc" id="program1b">
+        <div class="pt">Program 1b</div>
+        <div class="p_code">
+           
+            <pre><code>#include <stdio.h>
+                #include <limits.h>
+                
+                typedef struct
+                {
+                  int id;
+                  int at;  // Arrival Time
+                  int bt;  // Burst Time
+                  int rt;  // Remaining Time
+                  int ct;  // Completion Time
+                  int tat; // Turnaround Time
+                  int wt;  // Waiting Time
+                } process; //  processess
+                
+                void calculateTimes(process processs[], int n)
+                
+                {
+                  int curr_time = 0, completed = 0;
+                  int min_rt, shortest = 0, finish_time;
+                  int total_tat = 0, total_wt = 0;
+                  printf("the gantt chart\n");
+                
+                  // to execute untill all the programs completed
+                  while (completed != n)
+                  {
+                    // to find shortest processess
+                    min_rt = INT_MAX;
+                    for (int i = 0; i < n; i++)
+                    {
+                      if (processs[i].at <= curr_time && processs[i].rt < min_rt && processs[i].rt > 0)
+                      {
+                        min_rt = processs[i].rt; // instead of burst time we should use remaining as its a preemptive
+                        shortest = i;
+                      }
+                    }
+                
+                    // if no precess arrived just move
+                    if (min_rt == INT_MAX)
+                    {
+                      curr_time++;
+                      continue;
+                    }
+                     printf("P%d\t",processs[shortest].id);
+                    // one second of execution
+                    processs[shortest].rt--;
+                    curr_time++;
+                
+                    if (processs[shortest].rt == 0)
+                    {
+                      completed++;
+                      finish_time = curr_time;
+                      processs[shortest].ct = finish_time;
+                      processs[shortest].tat = finish_time - processs[shortest].at;
+                      processs[shortest].wt = processs[shortest].tat - processs[shortest].bt;
+                
+                      total_tat += processs[shortest].tat;
+                      total_wt += processs[shortest].wt;
+                    }
+                  }
+                
+                  printf("\nprocess\tArrival\tBurst\tComp\tTurnaround\tWaiting\n");
+                  for (int i = 0; i < n; i++)
+                  {
+                    printf("P%d\t%d\t%d\t%d\t\t%d\t\t%d\n", processs[i].id,
+                           processs[i].at, processs[i].bt,
+                           processs[i].ct, processs[i].tat,
+                           processs[i].wt);
+                  }
+                  printf("\nAverage Turnaround Time: %.2f\n", (float)total_tat / n);
+                  printf("Average Waiting Time: %.2f\n", (float)total_wt / n);
+                }
+                
+                int main()
+                {
+                  int n;
+                
+                  printf("Enter the number of processesses: ");
+                  scanf("%d", &n);
+                
+                  process processs[n];
+                  printf("Enter the arrival and burst time for each processess:\n");
+                  for (int i = 0; i < n; i++)
+                  {
+                    processs[i].id = i + 1;
+                    printf("processess P%d:\n", processs[i].id);
+                    printf("Arrival time: ");
+                    scanf("%d", &processs[i].at);
+                    printf("Burst time: ");
+                    scanf("%d", &processs[i].bt);
+                    processs[i].rt = processs[i].bt; // here  iam using remaining time
+                  }
+                
+                  calculateTimes(processs, n);
+                
+                  return 0;
+                }
+                </code></pre>
+        </div>
+    </div>
+
+    <div class="pc" id="program2a">
+        <div class="pt">Program 2a</div>
+        <div class="p_code">
+            
+            <pre><code>#!/bin/bash
+
+
+                echo "Enter the start: "
+                read low
+                echo "Enter the end: "
+                read high
+                
+                
+                echo "Prime numbers between $low and $high :"
+                for ((n=low; n<=high; n++)); do
+                    # if [ "$n" -le 1 ]; then
+                    #     continue
+                    # fi
+                   # these above lines are optional ,to handle numbers which are less than 2
+                
+                
+                    is_prime=true
+                    for ((i=2; i*i<=n; i++)); do
+                        if [ $((n % i)) -eq 0 ]; then
+                            is_prime=false
+                            break
+                        fi
+                    done
+                    if $is_prime; then
+                        echo "$n"
+                    fi
+                done</code></pre>
+        </div>
+    </div>
+    <div class="pc" id="program2b">
+        <div class="pt">Program 2b</div>
+        <div class="p_code">
+           
+            <pre><code>#include <stdio.h>
+                #include <limits.h>
+                
+                
+                typedef struct {
+                    int id;
+                    int at;  // Arrival Time
+                    int bt;  // Burst Time
+                    int pri; // Priority
+                    int rt;  // Remaining Time
+                    int ct;  // Completion Time
+                    int tat; // Turnaround Time
+                    int wt;  // Waiting Time
+                } Process;
+                
+                
+                void calculateTimes(Process p[], int n) {
+                    int curr_time = 0, completed = 0;
+                    int total_tat = 0, total_wt = 0;
+                    int prev_high_idx = -1;
+                
+                    printf("The Gantt chart\n");
+                
+                    while (completed != n) {
+                        int high_idx = -1;
+                        int high_pri = INT_MAX;
+                
+                        // Find the process with the highest priority that has arrived
+                        for (int i = 0; i < n; i++) {
+                            if (p[i].at <= curr_time && p[i].rt > 0) {
+                                if (p[i].pri < high_pri || (p[i].pri == high_pri && p[i].at < p[high_idx].at)) {
+                                    high_pri = p[i].pri;
+                                    high_idx = i;
+                                }
+                            }
+                        }
+                
+                       //here iam checking whether process changed or not , if it changed then only i print it
+                        // if (prev_high_idx != high_idx && high_idx != -1) {
+                        //     printf("P%d ", p[high_idx].id);
+                        //     prev_high_idx = high_idx;
+                        // }
+                        
+                         
+                
+                        // no process is arrived 
+                        if (high_idx == -1) {
+                            curr_time++;
+                            continue;
+                        }
+                        printf("P%d ", p[high_idx].id);
+                
+                       
+                        p[high_idx].rt--;
+                        curr_time++;
+                
+                        
+                        if (p[high_idx].rt == 0) {
+                            completed++;
+                            p[high_idx].ct = curr_time;
+                            p[high_idx].tat = p[high_idx].ct - p[high_idx].at;
+                            p[high_idx].wt = p[high_idx].tat - p[high_idx].bt;
+                            total_tat += p[high_idx].tat;
+                            total_wt += p[high_idx].wt;
+                        }
+                    }
+                
+                    // Print results
+                    printf("\n\nProc\tArrival\tBurst\tPriority\tComp\tTurnaround\tWaiting\n");
+                    for (int i = 0; i < n; i++) {
+                        printf("P%d\t%d\t%d\t%d\t\t%d\t\t%d\t\t%d\n", p[i].id,
+                               p[i].at, p[i].bt,
+                               p[i].pri, p[i].ct,
+                               p[i].tat, p[i].wt);
+                    }
+                    printf("\nAverage Turnaround Time: %.2f\n", (float)total_tat / n);
+                    printf("Average Waiting Time: %.2f\n", (float)total_wt / n);
+                }
+                
+                int main() {
+                    int n;
+                
+                    printf("Enter the number of processes: ");
+                    scanf("%d", &n);
+                
+                    Process p[n];
+                
+                    for (int i = 0; i < n; i++) {
+                        p[i].id = i + 1;
+                        printf("Enter details of Process P%d:\n", p[i].id);
+                        printf("Arrival time: ");
+                        scanf("%d", &p[i].at);
+                        printf("Burst time: ");
+                        scanf("%d", &p[i].bt);
+                        printf("Priority : ");
+                        scanf("%d", &p[i].pri);
+                        p[i].rt = p[i].bt; 
+                    }
+                
+                    calculateTimes(p, n);
+                
+                    return 0;
+                }
+                </code></pre>
+        </div>
+    </div>
+
+    <div class="pc" id="program3a">
+        <div class="pt">Program 3a</div>
+        <div class="p_code">
+          <pre><code>#!/bin/bash
+            echo "Enter the number of elements"
+            read n
+            numbers=()
+            echo "Enter the numbers:"
+            for ((i=0; i<n; i++)); do
+                read num
+                numbers+=($num)
+            done
+            largest=${numbers[0]}
+            for ((i=1; i<n; i++)); do
+                if [ "${numbers[i]}" -gt "$largest" ]; then
+                    largest=${numbers[i]}
+                fi
+            done
+            echo "The largest number is $largest"
+            </code></pre>
+        </div>
+    </div>
+    <div class="pc" id="program3b">
+        <div class="pt">Program 3b</div>
+        <div class="p_code">
+            <pre><code>#include <stdio.h>
+                #include <stdlib.h>
+                
+                typedef struct {
+                    int id;         // Process ID
+                    int arrival;    // Arrival Time
+                    int burst;      // Burst Time
+                    int completion; // Completion Time
+                    int turnaround; // Turnaround Time
+                    int waiting;    // Waiting Time
+                    int inQueue;    // Flag 
+                } Process;
+                
+                void swap(Process *a, Process *b) {
+                    Process temp = *a;
+                    *a = *b;
+                    *b = temp;
+                }
+                
+                void sortByArrival(int n, Process p[]) {
+                    for (int i = 0; i < n - 1; i++) {
+                        for (int j = 0; j < n - i - 1; j++) {
+                            if (p[j].arrival > p[j + 1].arrival) {
+                                swap(&p[j], &p[j + 1]);
+                            }
+                        }
+                    }
+                }
+                
+                int main() {
+                    int n, total_waiting = 0, total_turnaround = 0, quantum;
+                    float avg_waiting, avg_turnaround;
+                    
+                    printf("Enter the number of p: ");
+                    scanf("%d", &n);
+                    
+                    Process p[n];
+                    int original_burst[n]; 
+                
+                   
+                    printf("Enter the arrival time and burst time of each process (AT BT):\n");
+                    for (int i = 0; i < n; i++) {
+                        p[i].id = i + 1;
+                        printf("Process P%d: ", p[i].id);
+                        scanf("%d %d", &p[i].arrival, &p[i].burst);
+                        original_burst[i] = p[i].burst;
+                        p[i].inQueue = 0; // Initialize flag
+                    }
+                
+                    printf("Enter the time quantum: ");
+                    scanf("%d", &quantum);
+                
+                    sortByArrival(n, p); //sorting
+                
+                    int completed = 0, currentTime = p[0].arrival;
+                    int front = 0, rear = 0;
+                    int *queue = (int *)malloc(n * sizeof(int));
+                    queue[rear] = 0;
+                    p[0].inQueue = 1;
+                
+                    
+                    while (completed != n) {
+                        int currentIdx = queue[front];
+                        front = (front + 1) % n;
+                
+                        
+                        if (p[currentIdx].burst > quantum) {
+                            currentTime += quantum;
+                            p[currentIdx].burst -= quantum;
+                            printf("| P%d(%d) %d", p[currentIdx].id, quantum, currentTime);
+                        } else {
+                            currentTime += p[currentIdx].burst;
+                            printf("| P%d(%d) %d", p[currentIdx].id, p[currentIdx].burst, currentTime);
+                            p[currentIdx].burst = 0;
+                            p[currentIdx].completion = currentTime;
+                            p[currentIdx].turnaround = p[currentIdx].completion - p[currentIdx].arrival;
+                            p[currentIdx].waiting = p[currentIdx].turnaround - original_burst[currentIdx];
+                            total_turnaround += p[currentIdx].turnaround;
+                            total_waiting += p[currentIdx].waiting;
+                            completed++;
+                        }
+                
+                     
+                        for (int i = 0; i < n; i++) {
+                            if (p[i].arrival <= currentTime && p[i].inQueue == 0 && p[i].burst > 0) {
+                                rear = (rear + 1) % n;
+                                queue[rear] = i;
+                                p[i].inQueue = 1;
+                            }
+                        }
+                
+                       
+                        if (p[currentIdx].burst > 0) {
+                            rear = (rear + 1) % n;
+                            queue[rear] = currentIdx;
+                        }
+                    }
+                
+                    // Calculate average times
+                    avg_turnaround = (float)total_turnaround / n;
+                    avg_waiting = (float)total_waiting / n;
+                
+                    // Print process details
+                    printf("\n\nPID\tAT\tBT\tCT\tTAT\tWT\n");
+                    for (int i = 0; i < n; i++) {
+                        printf("%d\t%d\t%d\t%d\t%d\t%d\n", p[i].id, p[i].arrival, original_burst[i], p[i].completion, p[i].turnaround, p[i].waiting);
+                    }
+                    printf("\nAverage Turnaround Time = %.2f\nAverage Waiting Time = %.2f\n", avg_turnaround, avg_waiting);
+                
+                    free(queue);
+                    return 0;
+                }
+                </code></pre>
+        </div>
+    </div>
+
+
+    <div class="pc" id="program12a">
+        <div class="pt">Program 4a</div>
+        <div class="p_code">
+    
+            <pre><code>#                             Online Bash Shell.
+                #                 Code, Compile, Run and Debug Bash script online.
+                # Write your code in this editor and press "Run" button to execute it.
+                
+                #!/bin/bash
+                
+                echo "Enter the number of rows:"
+                read rows
+                echo "Enter the number of columns:"
+                read cols
+                
+                echo "Enter elements of the first matrix:"
+                for ((i = 0; i < rows; i++)); do
+                    for ((j = 0; j < cols; j++)); do
+                        read a[$((i * cols + j))]
+                    done
+                done
+                
+                echo "Enter elements of the second matrix:"
+                for ((i = 0; i < rows; i++)); do
+                    for ((j = 0; j < cols; j++)); do
+                        read b[$((i * cols + j))]
+                    done
+                done
+                
+                echo "First Matrix:"
+                for ((i = 0; i < rows; i++)); do
+                    for ((j = 0; j < cols; j++)); do
+                        echo -n "${a[$((i * cols + j))]} "
+                    done
+                    echo
+                done
+                
+                echo "Second Matrix:"
+                for ((i = 0; i < rows; i++)); do
+                    for ((j = 0; j < cols; j++)); do
+                        echo -n "${b[$((i * cols + j))]} "
+                    done
+                    echo
+                done
+                
+                echo "RResult:"
+                for ((i = 0; i < rows; i++)); do
+                    for ((j = 0; j < cols; j++)); do
+                        sum=$(( ${a[$((i * cols + j))]} + ${b[$((i * cols + j))]} ))
+                        echo -n "$sum "
+                    done
+                    echo
+                done
+                
+                </code></pre>
+        </div>
+    </div>
+    <div class="pc" id="program4b">
+        <div class="pt">Program 4b</div>
+        <div class="p_code">
+ 
+            <pre><code>#include <stdio.h>
+                #include <limits.h>
+                //(lower number indicates higher priority)
+                typedef struct
+                {
+                  int id;
+                  int at;  // Arrival Time
+                  int bt;  // Burst Time
+                  int pri; // Priority
+                  int ct;  // Completion Time
+                  int tat; // Turnaround Time
+                  int wt;  // Waiting Time
+                } Process;
+                void calculateTimes(Process p[], int n)
+                {
+                  int curr_time = 0, completed = 0;
+                  int total_tat = 0, total_wt = 0;
+                    printf("the gantt chart\n");
+                
+                  while (completed != n)
+                  {
+                    int high_pri_idx = -1;
+                    int high_pri = INT_MAX;
+                
+                    for (int i = 0; i < n; i++)
+                    {
+                      if (p[i].at <= curr_time && p[i].ct == 0)
+                      {
+                        if (p[i].pri < high_pri)
+                        {
+                          high_pri = p[i].pri;
+                          high_pri_idx = i;
+                        }
+                      }
+                    } printf("P%d\t",p[high_pri_idx].id);
+                
+                    // no process is arrived at that time
+                    if (high_pri_idx == -1)
+                    {
+                      curr_time++;
+                      continue;
+                    }
+                
+                    curr_time += p[high_pri_idx].bt;
+                    p[high_pri_idx].ct = curr_time;
+                    p[high_pri_idx].tat = curr_time - p[high_pri_idx].at;
+                    p[high_pri_idx].wt = p[high_pri_idx].tat - p[high_pri_idx].bt;
+                
+                    total_tat += p[high_pri_idx].tat;
+                    total_wt += p[high_pri_idx].wt;
+                    completed++;
+                  }
+                
+                  printf("\nProc\tArrival\tBurst\tPriority\tComp\tTurnaround\tWaiting\n");
+                  for (int i = 0; i < n; i++)
+                  {
+                    printf("P%d\t%d\t%d\t%d\t\t%d\t\t%d\t\t%d\n", p[i].id,
+                           p[i].at, p[i].bt,
+                           p[i].pri, p[i].ct,
+                           p[i].tat, p[i].wt);
+                  }
+                  printf("\nAverage Turnaround Time: %.2f\n", (float)total_tat / n);
+                  printf("Average Waiting Time: %.2f\n", (float)total_wt / n);
+                }
+                
+                int main()
+                {
+                  int n;
+                
+                  printf("Enter the number of processes: ");
+                  scanf("%d", &n);
+                
+                  Process p[n];
+                 
+                  for (int i = 0; i < n; i++)
+                  {printf("Enter details of Process P%d:\n", p[i].id);
+                    p[i].id = i + 1;
+                    printf("Process P%d:\n", p[i].id);
+                    printf("Arrival time: ");
+                    scanf("%d", &p[i].at);
+                    printf("Burst time: ");
+                    scanf("%d", &p[i].bt);
+                    printf("Priority : ");
+                    scanf("%d", &p[i].pri);
+                    p[i].ct = 0; // Iam using completion time
+                  }
+                
+                  calculateTimes(p, n);
+                
+                  return 0;
+                }
+                </code></pre>
+        </div>
+    </div>
+    <div class="pc" id="program1a">
+      <div class="pt">Program 5a</div>
+      <div class="p_code">
+         
+          <pre><code>// Code for Program 1a</code></pre>
+      </div>
+  </div>
+  <div class="pc" id="program1b">
+      <div class="pt">Program 5b</div>
+      <div class="p_code">
+         
+          <pre><code>// Code for Program 1b</code></pre>
+      </div>
+  </div>
+
+  <div class="pc" id="program2a">
+      <div class="pt">Program 6a</div>
+      <div class="p_code">
+          
+          <pre><code>// Code for Program 2a</code></pre>
+      </div>
+  </div>
+  <div class="pc" id="program2b">
+      <div class="pt">Program 6b</div>
+      <div class="p_code">
+         
+          <pre><code>// Code for Program 2b</code></pre>
+      </div>
+  </div>
+
+  <div class="pc" id="program3a">
+      <div class="pt">Program 7a</div>
+      <div class="p_code">
+        <pre><code>// Code for Program 3a</code></pre>
+      </div>
+  </div>
+  <div class="pc" id="program3b">
+      <div class="pt">Program 7b</div>
+      <div class="p_code">
+          <pre><code>// Code for Program 3b</code></pre>
+      </div>
+  </div>
+
+
+  <div class="pc" id="program12a">
+      <div class="pt">Program 8a</div>
+      <div class="p_code">
+  
+          <pre><code>// Code for Program 12a</code></pre>
+      </div>
+  </div>
+  <div class="pc" id="program12b">
+      <div class="pt">Program 8b</div>
+      <div class="p_code">
+
+          <pre><code>// Code for Program 12b</code></pre>
+      </div>
+  </div>
+  <div class="pc" id="program1a">
+    <div class="pt">Program 9a</div>
+    <div class="p_code">
+       
+        <pre><code>// Code for Program 1a</code></pre>
+    </div>
+</div>
+<div class="pc" id="program1b">
+    <div class="pt">Program 9b</div>
+    <div class="p_code">
+       
+        <pre><code>// Code for Program 1b</code></pre>
+    </div>
+</div>
+
+<div class="pc" id="program2a">
+    <div class="pt">Program 10a</div>
+    <div class="p_code">
+        
+        <pre><code>// Code for Program 2a</code></pre>
+    </div>
+</div>
+<div class="pc" id="program2b">
+    <div class="pt">Program 10b</div>
+    <div class="p_code">
+       
+        <pre><code>// Code for Program 2b</code></pre>
+    </div>
+</div>
+
+<div class="pc" id="program3a">
+    <div class="pt">Program 11a</div>
+    <div class="p_code">
+      <pre><code>// Code for Program 3a</code></pre>
+    </div>
+</div>
+<div class="pc" id="program3b">
+    <div class="pt">Program 11b</div>
+    <div class="p_code">
+        <pre><code>// Code for Program 3b</code></pre>
+    </div>
+</div>
+
+
+<div class="pc" id="program12a">
+    <div class="pt">Program 12a</div>
+    <div class="p_code">
+
+        <pre><code>// Code for Program 12a</code></pre>
+    </div>
+</div>
+<div class="pc" id="program12b">
+    <div class="pt">Program 12b</div>
+    <div class="p_code">
+
+        <pre><code>// Code for Program 12b</code></pre>
+    </div>
+</div>
+
+
+    <script src="./script.js"></script>
+</body>
+</html>

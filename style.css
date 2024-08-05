@@ -1,0 +1,41 @@
+/* General body styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+/* Container for each program */
+.pc {
+  margin: 10px 0;
+}
+
+/* Title section that is clickable */
+.pt {
+  cursor: pointer;
+  background-color: #f2f2f2;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+/* Hover effect for program title */
+.pt:hover {
+  background-color: #e0e0e0;
+}
+
+/* Code section that is hidden by default */
+.p_code {
+  display: none;
+  padding: 10px;
+  border-left: 3px solid #ccc;
+  border-radius: 5px;
+  background-color: #fafafa;
+  margin-top: 5px;
+}
+
+/* Styles for the code block */
+pre {
+  margin: 0;
+  white-space: pre-wrap; /* Wrap long lines */
+}
