@@ -581,14 +581,126 @@
       <div class="pt">Program 5a</div>
       <div class="p_code">
          
-          <pre><code>// Code for Program 1a</code></pre>
+          <pre><code>#include <stdio.h>
+            #include <stdlib.h>
+            #include <sys/types.h>
+            #include <sys/stat.h>
+            #include <fcntl.h>
+            #include <unistd.h>
+            #define BUFFER_SIZE 30
+            int main()
+            {
+              int fd = open("example.txt", O_RDWR), n;
+              char buffer[BUFFER_SIZE];
+              printf("File discriptor is %d\n", fd);
+              if (fd == -1)
+              {
+                printf("Failed to open file.\n");
+                exit(0);
+              }
+              printf("Reading first 10 characters from file: \n");
+              n = read(fd, buffer, 10);
+              write(1, buffer, n);
+              printf("\nSkipping 5 charecters from current position in the file: \n");
+              lseek(fd, 5, SEEK_CUR);
+              n = read(fd, buffer, 10);
+              write(1, buffer, n);
+              printf("\nGoing 10 charecters before the current position in the file: \n");
+              lseek(fd, -10, SEEK_CUR);
+              n = read(fd, buffer, 10);
+              write(1, buffer, n);
+              printf("\nGoing to 5th last charecter in the file: \n");
+              lseek(fd, -5, SEEK_END);
+              n = read(fd, buffer, 5);
+              write(1, buffer, n);
+              printf("\nGoing to the 3rd charecter in the file: \n");
+              lseek(fd, 3, SEEK_SET);
+              n = read(fd, buffer, 5);
+              write(1, buffer, n);
+              return 0;
+            }
+            </code></pre>
       </div>
   </div>
   <div class="pc" id="program1b">
       <div class="pt">Program 5b</div>
       <div class="p_code">
          
-          <pre><code>// Code for Program 1b</code></pre>
+          <pre><code>#include <stdio.h>
+
+            typedef struct {
+                int id;
+                int at; // Arrival Time
+                int bt; // Burst Time
+                int ct; // Completion Time
+                int tat; // Turnaround Time
+                int wt; // Waiting Time
+            } Process;
+            
+            void sortProcessesByArrivalTime(Process p[], int n) {
+                for (int i = 0; i < n - 1; i++) {
+                    for (int j = 0; j < n - i - 1; j++) {
+                        if (p[j].at > p[j + 1].at) {
+                            // Swap processes
+                            Process temp = p[j];
+                            p[j] = p[j + 1];
+                            p[j + 1] = temp;
+                        }
+                    }
+                }
+            }
+            
+            void calculateTimes(Process p[], int n) {
+                int total_tat = 0, total_wt = 0;
+                int time = 0;
+            
+                for (int i = 0; i < n; i++) {
+                    if (time < p[i].at) {
+                        time = p[i].at;
+                    }
+            
+                    p[i].ct = time + p[i].bt;
+                    p[i].tat = p[i].ct - p[i].at;
+                    p[i].wt = p[i].tat - p[i].bt;
+            
+                    total_tat += p[i].tat;
+                    total_wt += p[i].wt;
+            
+                    time = p[i].ct;
+                }
+            
+                // Print results
+                printf("\nProcess\tArrival\tBurst\tCompletion\tTurnaround\tWaiting\n");
+                for (int i = 0; i < n; i++) {
+                    printf("P%d\t%d\t%d\t%d\t\t%d\t\t%d\n", p[i].id, p[i].at, p[i].bt, p[i].ct, p[i].tat, p[i].wt);
+                }
+                printf("\nAverage Turnaround Time: %.2f\n", (float)total_tat / n);
+                printf("Average Waiting Time: %.2f\n", (float)total_wt / n);
+            }
+            
+            int main() {
+                int n;
+            
+                printf("Enter the number of processes: ");
+                scanf("%d", &n);
+            
+                Process p[n];
+            
+                for (int i = 0; i < n; i++) {
+                    p[i].id = i + 1;
+                    printf("Process P%d:\n", p[i].id);
+                    printf("Arrival time: ");
+                    scanf("%d", &p[i].at);
+                    printf("Burst time: ");
+                    scanf("%d", &p[i].bt);
+                }
+            
+                sortProcessesByArrivalTime(p, n);
+                calculateTimes(p, n);
+            
+                return 0;
+            }
+            </code></pre>
       </div>
   </div>
 
@@ -596,21 +708,188 @@
       <div class="pt">Program 6a</div>
       <div class="p_code">
           
-          <pre><code>// Code for Program 2a</code></pre>
+          <pre><code>/*program to inplement the zombie process*/
+            #include<stdio.h>
+            #include<stdlib.h>
+            #include<sys/types.h>
+            #include<unistd.h>
+            int main() {
+            pid_t my_pid, child_pid, parent_pid;
+            child_pid = fork();
+            if (child_pid < 0) {
+            printf("\nFork failed, exiting!!\n");
+            exit(1);
+            }
+            if (child_pid == 0) {
+            // This is the child process part
+            printf("\n[CHILD] This is the child process.\n");
+            my_pid = getpid();
+            parent_pid = getppid();
+            printf("[CHILD] My pid is %d\n", my_pid);
+            printf("[CHILD] My parent's pid is %d\n", parent_pid);
+            printf("[CHILD] Exiting\n");
+            exit(1);
+            } else {
+            // This is the parent process part
+            printf("\n[PARENT] This is the parent process\n");
+            my_pid = getpid();
+            parent_pid = getppid();
+            printf("[PARENT] My pid is %d\n", my_pid);
+            printf("[PARENT] My parent's pid is %d\n", parent_pid);
+            printf("[PARENT] Sleeping for 10 seconds\n");
+            sleep(10);
+            printf("\n[PARENT] Child process with pid = %d has ended, but still has an entry in theprocess table. \n", child_pid);
+            printf("[PARENT] It is therefore a Zombie process\n");
+            }
+            return 0;
+            }<br>#include<stdio.h>
+                #include<stdlib.h>
+                #include<unistd.h>
+                #include<sys/types.h>
+                int main() {
+                pid_t my_pid, parent_pid, child_pid;
+                child_pid = fork();
+                if (child_pid < 0) {
+                printf("\nFork failed, exiting!!\n");
+                exit(1);
+                }
+                if (child_pid == 0) {
+                // This is the child process
+                printf("\n[CHILD] This is the child process.\n");
+                my_pid = getpid();
+                parent_pid = getppid();
+                printf("[CHILD] My pid is %d\n", my_pid);
+                printf("[CHILD] My parent's pid is %d\n", parent_pid);
+                printf("[CHILD] Sleeping for 10 seconds\n");
+                sleep(10);
+                printf("\n[CHILD] My parent has ended, so I am an orphan process, adopted by init process\n");
+                } else {
+                // This is the parent process part
+                printf("\n[PARENT] This is the parent process.\n");
+                my_pid = getpid();
+                parent_pid = getppid();
+                printf("[PARENT] My pid is %d\n", my_pid);
+                printf("[PARENT] My parent's pid is %d\n", parent_pid);
+                printf("[PARENT] Exiting\n");
+                exit(0);
+                }
+                return 0;
+                }</code></pre>
       </div>
   </div>
   <div class="pc" id="program2b">
       <div class="pt">Program 6b</div>
       <div class="p_code">
          
-          <pre><code>// Code for Program 2b</code></pre>
+          <pre><code>#include <stdio.h>
+
+            typedef struct {
+                int id;
+                int at; // Arrival Time
+                int bt; // Burst Time
+                int ct; // Completion Time
+                int tat; // Turnaround Time
+                int wt; // Waiting Time
+                int completed; // Completion flag
+            } Process; // Process
+            
+            void calculateTimes(Process p[], int n) {
+                int time = 0, completed = 0;
+                int total_tat = 0, total_wt = 0;
+               printf("The Gantt chart\n");
+                while (completed != n) {
+                    int min_index = -1;
+                    int min_bt = 100000; // A large number
+            
+                  
+                    for (int i = 0; i < n; i++) {
+                        if (p[i].at <= time && !p[i].completed) {
+                            if (p[i].bt < min_bt) {
+                                min_bt = p[i].bt;
+                                min_index = i;
+                            }
+                        }
+                    }
+            
+                    if (min_index == -1) {
+                        
+                        time++;
+                    } else {
+                       printf("P%d ", p[min_index].id);
+                         time += p[min_index].bt;
+                        p[min_index].ct = time;
+                        p[min_index].tat = p[min_index].ct - p[min_index].at;
+                        p[min_index].wt = p[min_index].tat - p[min_index].bt;
+            
+                        total_tat += p[min_index].tat;
+                        total_wt += p[min_index].wt;
+                        p[min_index].completed = 1;
+                        completed++;
+                    }
+                }
+            
+                // Print results
+                printf("\nProcess\tArrival\tBurst\tCompletion\tTurnaround\tWaiting\n");
+                for (int i = 0; i < n; i++) {
+                    printf("P%d\t%d\t%d\t%d\t\t%d\t\t%d\n", p[i].id,
+                           p[i].at, p[i].bt, p[i].ct, p[i].tat,
+                           p[i].wt);
+                }
+                printf("\nAverage Turnaround Time: %.2f\n", (float)total_tat / n);
+                printf("Average Waiting Time: %.2f\n", (float)total_wt / n);
+            }
+            
+            int main() {
+                int n;
+            
+                printf("Enter the number of processes: ");
+                scanf("%d", &n);
+            
+                Process p[n];
+                printf("Enter the arrival time and burst time for each process:\n");
+                for (int i = 0; i < n; i++) {
+                    p[i].id = i + 1;
+                    printf("Process P%d:\n", p[i].id);
+                    printf("Arrival time: ");
+                    scanf("%d", &p[i].at);
+                    printf("Burst time: ");
+                    scanf("%d", &p[i].bt);
+                    p[i].completed = 0;
+                }
+            
+                calculateTimes(p, n);
+            
+                return 0;
+            }
+            </code></pre>
       </div>
   </div>
 
   <div class="pc" id="program3a">
       <div class="pt">Program 7a</div>
       <div class="p_code">
-        <pre><code>// Code for Program 3a</code></pre>
+        <pre><code>// Simulation of "grep" command
+            #include<stdio.h>
+            #include<string.h>
+            void main()
+            {
+            char fn[10],pat[10],temp[200];
+            FILE *fp;
+            printf("Enter file name\n");
+            scanf("%s",fn);
+            printf("Enter pattern to be searched\n");
+            scanf("%s",pat);
+            fp=fopen(fn,"r");
+            while(!feof(fp))
+            {
+            
+            
+            fgets(temp,100,fp);
+            if(strstr(temp,pat))
+            printf("%s",temp);
+            }
+            fclose(fp);
+            }</code></pre>
       </div>
   </div>
   <div class="pc" id="program3b">
