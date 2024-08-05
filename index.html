@@ -895,7 +895,99 @@
   <div class="pc" id="program3b">
       <div class="pt">Program 7b</div>
       <div class="p_code">
-          <pre><code>// Code for Program 3b</code></pre>
+          <pre><code>//child program 
+            #include <sys/types.h>
+            #include <sys/wait.h>
+            #include <stdio.h>
+            #include <string.h>
+            #include <unistd.h>
+            #include <sys/shm.h>
+            #include <sys/stat.h>
+            #include <fcntl.h>
+            #include <sys/mman.h>
+            #include<stdlib.h>
+            int main(int argc,char *argv[])
+            {
+                     int k=2,n1,n2,n3;
+                     void*ptr;
+                     int shm_fd = shm_open("VSS", O_CREAT | O_RDWR, 0666);
+                     ftruncate(shm_fd,4096);
+                     ptr = mmap(0,4096,PROT_WRITE, MAP_SHARED, shm_fd, 0);
+                     printf("CHILD:\n");
+                     int i=atoi(argv[1]);
+                     n1=0;
+                     n2=1;
+                     sprintf(ptr,"%d ",n1);
+                     ptr+=strlen(ptr);
+                     printf("%d ",n1);
+                     sprintf(ptr,"%d ",n2);
+                     ptr+=strlen(ptr);
+                     printf("%d ",n2);
+                     while (k!=i)
+                     {
+                            n3=n1+n2;
+                            sprintf(ptr,"%d ", n3);
+                            printf("%d ", n3);
+                            n1=n2;
+                            n2=n3;
+                            ptr += strlen(ptr);
+                            k++;
+                }
+            }
+                
+            <br>//parent.c
+            #include <stdlib.h>
+            #include <sys/types.h>
+            #include <sys/wait.h>
+            #include <stdio.h>
+            #include <string.h>
+            #include <unistd.h>
+            #include <sys/shm.h>
+            #include <sys/stat.h>
+            #include <fcntl.h>
+            #include <sys/mman.h>
+            int main(int argc,char *argv[])
+            {
+                int i;
+                pid_t pid;
+                int k;
+                int n1,n2,n3;
+                const int SIZE = 4096;
+                    int shm_fd;
+                void *ptr;
+                if (argc > 1)
+                {
+                    sscanf(argv[1], "%d", &i);
+                    if (i < 1)
+                    {
+                        printf("Error input: %d\n", i);
+                        return 0;
+                    }
+                }
+                else
+                {
+                  printf("Error: not passing N in command line\n");
+                  exit(0);
+                }
+                pid = fork();
+                if (pid == 0)// CHILD
+                {   
+                    execlp("./fib","fib",argv[1],NULL);
+                }
+                else if (pid > 0)
+                {
+                    wait(NULL);
+                    printf("\nPARENT: child completed\n");
+            
+                    shm_fd = shm_open("VSS", O_RDONLY, 0666);
+                    ptr = mmap(0, SIZE, PROT_READ, MAP_SHARED, shm_fd, 0);
+                    printf("Parent printing:\n");
+                    printf("%s ", (char *)ptr);
+                    shm_unlink("VSS");
+                }
+                return 0;
+            }
+            </code></pre>
       </div>
   </div>
 
@@ -904,28 +996,133 @@
       <div class="pt">Program 8a</div>
       <div class="p_code">
   
-          <pre><code>// Code for Program 12a</code></pre>
+          <pre><code>#include<stdio.h>
+            #include<sys/types.h>
+            #include<dirent.h>
+            #include<stdlib.h>
+            void main(int argc, char *argv[])
+            {
+            DIR *dp;
+            struct dirent *dirp;
+            if(argc<2)
+            {
+            printf("\n You are not passing the directory\n");
+            exit(1);
+            }
+            if((dp=opendir(argv[1]))==NULL)
+            {
+            printf("\nCannot open it does't exist %s file!\n",argv[1]);
+            exit(1);
+            }
+            while((dirp=readdir(dp))!=NULL)
+            printf("%s\n",dirp->d_name);
+            closedir(dp);
+            }
+            /*Save the above program as filename.c
+            Create a directory with any 2 or more files
+            Compile the .c (above program) file and then execute the file by passing the folder as the 2nd
+            argument.
+            Gcc filename.c
+            Chmod 777 filename.c
+            ./a.out foldername*/</code></pre>
       </div>
   </div>
   <div class="pc" id="program12b">
       <div class="pt">Program 8b</div>
       <div class="p_code">
 
-          <pre><code>// Code for Program 12b</code></pre>
+          <pre><code>// same as 7child and parent program</code></pre>
       </div>
   </div>
   <div class="pc" id="program1a">
     <div class="pt">Program 9a</div>
     <div class="p_code">
        
-        <pre><code>// Code for Program 1a</code></pre>
+        <pre><code>#https://www.onlinegdb.com/online_bash_shell
+            #use the above link to run shell srcipt 
+            
+            #!/bin/bash
+            
+            #read the number 
+            echo "Enter a number: "
+            read number
+            
+            # Reverse the number 
+            reversed=$(echo "$number" | rev)
+            
+            # Check it is palindrome or not
+            if [ "$number" -eq "$reversed" ]; then
+                echo "$number is a palindrome."
+            else
+                echo "$number is not a palindrome."
+            fi</code></pre>
     </div>
 </div>
 <div class="pc" id="program1b">
     <div class="pt">Program 9b</div>
     <div class="p_code">
        
-        <pre><code>// Code for Program 1b</code></pre>
+        <pre><code>//parent program
+            #include <stdio.h>
+            #include <sys/shm.h>
+            #include <sys/ipc.h>
+            #include <sys/types.h>
+            #include <sys/wait.h>
+            #include <unistd.h>
+            
+            typedef struct {
+                int n;
+                int arr[100];
+            } pack_t;
+            
+            int main() {
+                key_t key = 1234;
+                int shmid = shmget(key, sizeof(pack_t), 0666 | IPC_CREAT);
+                pack_t* shm_ptr = (pack_t*) shmat(shmid, NULL, 0666);
+                printf("[PARENT] Created shared memory with key = %d, id = %d, address = %p\n", key, shmid, shm_ptr);
+                printf("[PARENT] Enter n: ");
+                scanf("%d", &shm_ptr->n);
+                pid_t child_pid;
+                if ((child_pid = fork()) == 0) {
+                    execlp("./child", "./child", NULL); // Child
+                } else {
+                    wait(NULL);
+                    printf("[PARENT] Child finished executing.\n");
+                    printf("[PARENT] The first %d odd numbers are: \n", shm_ptr->n);
+                    for (int i = 0; i < shm_ptr->n; i++)
+                        printf("%d ", shm_ptr->arr[i]);
+                    putchar('\n');
+                }
+            
+                shmdt((void*) shm_ptr);
+                shmctl(shmid, IPC_RMID, NULL); // Delete shared memory
+                printf("[PARENT] Shared Memory Deleted\n");
+                return 0;
+            }
+            <br>//child program
+            #include <stdio.h>
+            #include <sys/shm.h>
+            #include <sys/ipc.h>
+            #include <sys/types.h>
+            
+            typedef struct {
+                int n;
+                int arr[100];
+            } pack_t;
+            
+            int main() {
+                key_t key = 1234;
+                int shmid = shmget(key, sizeof(pack_t), 0666);
+                pack_t* shm_ptr = (pack_t*) shmat(shmid, NULL, 0666);
+                printf("[CHILD] Attached to shared memory with key = %d, id = %d. address = %p\n", key, shmid, shm_ptr);
+                for (int i = 0; i < shm_ptr->n; i++)
+                    shm_ptr->arr[i] = 2*i + 1;
+                printf("[CHILD] Finished generating first %d odd numbers\n", shm_ptr->n);
+                shmdt((void*) shm_ptr);
+                return 0;
+            }
+            
+            </code></pre>
     </div>
 </div>
 
@@ -933,27 +1130,244 @@
     <div class="pt">Program 10a</div>
     <div class="p_code">
         
-        <pre><code>// Code for Program 2a</code></pre>
+        <pre><code>//simulate CAT cmd (VIEW only)
+            #include<stdio.h>
+            #include<stdlib.h>
+            void main(int argc, char *argv[])
+            {
+            FILE *fp;
+            char ch;
+            if(argc<2)
+            {
+            printf("File not entered");
+            exit(1);
+            }
+            fp=fopen(argv[1],"r");
+            if(fp==NULL)
+            {
+            printf("File does not exist\n");
+            exit(1);
+            }
+            while((ch=fgetc(fp))!=EOF)
+            printf("%c",ch);
+            fclose(fp);
+            printf("\n");
+            }</code></pre>
     </div>
 </div>
 <div class="pc" id="program2b">
     <div class="pt">Program 10b</div>
     <div class="p_code">
        
-        <pre><code>// Code for Program 2b</code></pre>
+        <pre><code>//parent.c
+
+            #include <stdio.h>
+           #include <sys/types.h>
+           #include <sys/wait.h>
+           #include <stdio.h>
+           #include <string.h>
+           #include <unistd.h>
+           #include <sys/shm.h>
+           #include <sys/stat.h>
+           #include <fcntl.h>
+           #include <sys/mman.h>
+           #include <stdlib.h>
+            
+           int main (int arguementCount, char *arguementVector[]) {
+                       int i, k, n1, n2, sharedMemoryFileDescriptor, j;
+                       const int SIZE = 4096;
+                       pid_t processID;
+                       void *ptr;
+                       if (arguementCount > 2) {
+                                   sscanf(arguementVector[1], "%d", &i);
+                                   sscanf(arguementVector[2], "%d", &j);
+                                   if (i < 2) {
+                                               printf("Error input: %d\n", i);
+                                               return 0;
+                                   }
+                       } else {
+                                   printf("Error: Minimum of two arguements must be passed as command line arguements!");
+                                   exit(0);
+                       }
+                       processID = fork();
+                       if (processID == 0) {
+                                   execlp("./child.c", "prime", arguementVector[1], arguementVector[2], NULL);
+                       } else if (processID > 0) {
+                                   wait(NULL);
+                                   printf("\nParent: child complete!\n");
+                                   sharedMemoryFileDescriptor = shm_open("OS", O_RDONLY, 0666);
+                                   ptr = mmap(0, SIZE, PROT_READ, MAP_SHARED, sharedMemoryFileDescriptor, 0);
+                                   printf("%s", (char *) ptr);
+                                   shm_unlink("OS");
+                       }
+                       return 0;
+           }
+            
+           
+           //child.c
+            #include <sys/types.h>
+           #include <sys/wait.h>
+           #include <stdio.h>
+           #include <string.h>
+           #include <unistd.h>
+           #include <sys/shm.h>
+           #include <sys/stat.h>
+           #include <fcntl.h>
+           #include <sys/mman.h>
+           #include<stdlib.h>
+           #include <math.h>
+           int main(int arguementCount,char *arguementVector[]) {
+                       void *ptr;
+                       int sharedMemoryFileDescriptor = shm_open("VSS", O_CREAT | O_RDWR, 0666);
+                       ftruncate(sharedMemoryFileDescriptor,4096);
+                       ptr = mmap(0,4096,PROT_WRITE, MAP_SHARED, sharedMemoryFileDescriptor, 0);
+                       printf("CHILD:\n");
+                       int i = atoi(arguementVector[1]);
+                       int j = atoi(arguementVector[2]);
+                       int flag = 0;
+                       printf("The prime numbers in the range %d and %d are:\n", i, j);
+                       for (int num = i; num < j; num++) {
+                           flag = 0;
+                           for (int k = 2; k <= n/2; k++) {
+                                    if (num % k == 0) {
+                                        flag = 1;
+                                        break;
+                                    }
+                           }
+                           if (flag == 0) {
+                                    printf("%d\t", num);
+                           }
+                       }                         	
+                       printf("\n");
+           }
+           </code></pre>
     </div>
 </div>
 
 <div class="pc" id="program3a">
     <div class="pt">Program 11a</div>
     <div class="p_code">
-      <pre><code>// Code for Program 3a</code></pre>
+      <pre><code>
+        //gcc thread.c -pthread -o thread
+        #include<stdio.h>
+        #include<stdlib.h>
+        #include<pthread.h>
+        int sm=0, prod=1;
+        void *sum(void *parm)
+        {
+        int i, n;
+        n = atoi(parm);
+        printf("inside sum thread\n");
+        
+        for(i=1; i<=n;i++)
+        {
+        sm+=i;
+        }
+        printf("sum thread completed\n");
+        }
+        void *fact(void *parm)
+        {
+        int i, n;
+        n = atoi(parm);
+        printf("inside mul thread\n");
+        for(i=2; i<=n;i++)
+        {
+        prod =prod *i;
+        
+        }
+        printf("mul thread completed product\n");
+        }
+        void main(int argc, char * argv[])
+        {
+        pthread_t T1,T2;
+        pthread_attr_t attr;
+        pthread_attr_init(&attr);
+        pthread_create(&T1, &attr, sum, argv[1]);
+        pthread_create(&T2, &attr, fact, argv[1]);
+        pthread_join(T1,NULL);
+        pthread_join(T2,NULL);
+        printf("Inside main thread\n");
+        printf("sum=%d\n",sm);
+        printf("product=%d\n",prod);
+        }	 	 	 	
+        </code></pre>
     </div>
 </div>
 <div class="pc" id="program3b">
     <div class="pt">Program 11b</div>
     <div class="p_code">
-        <pre><code>// Code for Program 3b</code></pre>
+        <pre><code>#include <pthread.h>
+            #include <semaphore.h>
+            #include <stdlib.h>
+            #include <stdio.h>
+            #define MaxItems 3 // Maximum items a producer can produce or a consumer can consume
+            #define BufferSize 3 // Size of the buffer
+            
+            sem_t empty;
+            sem_t full;
+            int in = 0;
+            int out = 0;
+            int buffer[BufferSize];
+            pthread_mutex_t mutex;
+            
+            void *producer(void *pno)
+            {   
+                int item;
+                for(int i = 0; i < MaxItems; i++) {
+                    item = rand()%100; // Produce an random item
+                    sem_wait(&empty);
+                    pthread_mutex_lock(&mutex);
+                    buffer[in] = item;
+                    printf("Producer %d: Insert Item %d at %d\n", *((int *)pno),buffer[in],in);
+                    in = (in+1)%BufferSize;
+                    pthread_mutex_unlock(&mutex);
+                    sem_post(&full);
+                }
+            }
+            void *consumer(void *cno)
+            {   
+                for(int i = 0; i < MaxItems; i++) {
+                    sem_wait(&full);
+                    pthread_mutex_lock(&mutex);
+                    int item = buffer[out];
+                    printf("Consumer %d: Remove Item %d from %d\n",*((int *)cno),item, out);
+                    out = (out+1)%BufferSize;
+                    pthread_mutex_unlock(&mutex);
+                    sem_post(&empty);
+                }
+            }
+            int main()
+            {   
+            
+                pthread_t pro[3],con[3];
+                pthread_mutex_init(&mutex, NULL);
+                sem_init(&empty,0,BufferSize);
+                sem_init(&full,0,0);
+            
+                int a[3] = {1,2,3}; //Just used for numbering the producer and consumer
+            
+                for(int i = 0; i < 3; i++) {
+                    pthread_create(&pro[i], NULL, (void *)producer, (void *)&a[i]);
+                }
+                for(int i = 0; i < 3; i++) {
+                    pthread_create(&con[i], NULL, (void *)consumer, (void *)&a[i]);
+                }
+            
+                for(int i = 0; i < 3; i++) {
+                    pthread_join(pro[i], NULL);
+                }
+                for(int i = 0; i < 3; i++) {
+                    pthread_join(con[i], NULL);
+                }
+            
+                pthread_mutex_destroy(&mutex);
+                sem_destroy(&empty);
+                sem_destroy(&full);
+            
+                return 0;
+              }  
+            
+            </code></pre>
     </div>
 </div>
 
@@ -962,14 +1376,105 @@
     <div class="pt">Program 12a</div>
     <div class="p_code">
 
-        <pre><code>// Code for Program 12a</code></pre>
+        <pre><code>#!/bin/bash
+
+            # Read three numbers from the user
+            echo "Enter three numbers:"
+            read num1
+            read num2
+            read num3
+            
+            # Compare the numbers
+            if [ "$num1" -gt "$num2" ] && [ "$num1" -gt "$num3" ]; then
+                echo "The largest number is $num1"
+            elif [ "$num2" -gt "$num1" ] && [ "$num2" -gt "$num3" ]; then
+                echo "The largest number is $num2"
+            else
+                echo "The largest number is $num3"
+            fi
+            </code></pre>
     </div>
 </div>
 <div class="pc" id="program12b">
     <div class="pt">Program 12b</div>
     <div class="p_code">
 
-        <pre><code>// Code for Program 12b</code></pre>
+        <pre><code>#include <pthread.h>
+            #include <semaphore.h>
+            #include <stdio.h>
+            
+            sem_t wrt;
+            pthread_mutex_t mutex;
+            int cnt = 1;
+            int numreader = 0;
+            
+            void *writer(void *wno)
+            {   
+                sem_wait(&wrt);
+              //sem_wait(&sem_name); If the value of the semaphore is negative, the calling process blocks; 
+                cnt = cnt*2;
+                printf("Writer %d modified cnt to %d\n",(*((int *)wno)),cnt);
+                sem_post(&wrt);
+              //sem_post(&sem_name); It increments the value of the semaphore and wakes up a blocked process waiting on the semaphore, if any.
+            
+            }
+            void *reader(void *rno)
+            {   
+                // Reader acquire the lock before modifying numreader
+                pthread_mutex_lock(&mutex);
+                numreader++;
+                if(numreader == 1) 
+                {
+                    sem_wait(&wrt); // If this id the first reader, then it will block the writer
+                }
+                pthread_mutex_unlock(&mutex);
+                // Reading Section
+                printf("Reader %d: read cnt as %d\n",*((int *)rno),cnt);
+            
+                // Reader acquire the lock before modifying numreader
+                pthread_mutex_lock(&mutex);
+                numreader--;
+                if(numreader == 0) 
+                {
+                    sem_post(&wrt); // If this is the last reader, it will wake up the writer.
+                }
+                pthread_mutex_unlock(&mutex);
+            }
+            
+            int main()
+            {   
+            
+                pthread_t read[3],write[3];
+                pthread_mutex_init(&mutex, NULL);
+            //initialize a mutex to its default value
+                sem_init(&wrt,0,1);
+            //sem_init() function initializes an unnamed semaphore and sets its initial value. Syntax: sem_init(sem_t *sem, int pshared, unsigned int value); sem ---> points to a semaphore object to initialize; pshared ---> A value of zero indicates that the semaphore will be used only by threads within the current process. A nonzero value indicates that the semaphore may be used by threads from other processes; value ---> used to initialize the value of the semaphore
+                int a[3] = {1,2,3}; //Just used for numbering the reader and writer
+            
+                for(int i = 0; i < 3; i++) {
+                    pthread_create(&read[i], NULL, (void *)reader, (void *)&a[i]);
+                  //pthread_create(&tid, &attr, threadfun, args);
+                }
+                for(int i = 0; i < 3; i++) {
+                    pthread_create(&write[i], NULL, (void *)writer, (void *)&a[i]);
+                }
+            
+                for(int i = 0; i < 3; i++) {
+                    pthread_join(read[i], NULL);
+                }
+                for(int i = 0; i < 3; i++) {
+                    pthread_join(write[i], NULL);
+                }
+            
+                pthread_mutex_destroy(&mutex);
+            //pthread_mutex_destroy() function destroys the mutex object referenced by mutex; 
+                sem_destroy(&wrt);
+            //int sem_destroy(sem_t *sem)-->destroys the semaphore; no threads should be waiting on the semaphore if its destruction is to succeed.
+                return 0;
+              }
+                
+            
+            </code></pre>
     </div>
 </div>
 
