@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
     var programTitles = document.querySelectorAll('.pt');
     var copyButtons = document.querySelectorAll('.copy-button');
+    var toggleButton = document.getElementById('toggle-theme');
+    var isDarkMode = false;
 
+   
     programTitles.forEach(function (title) {
         title.addEventListener('click', function () {
             var code = this.nextElementSibling;
@@ -13,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-   
+    
     copyButtons.forEach(function (button) {
         button.addEventListener('click', function () {
             var codeBlock = this.previousElementSibling;
@@ -29,7 +32,14 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+
+    
+    toggleButton.addEventListener('click', function () {
+        document.body.classList.toggle('dark-mode');
+        if (document.body.classList.contains('dark-mode')) {
+            toggleButton.textContent = 'Switch to Light Mode';
+        } else {
+            toggleButton.textContent = 'Switch to Dark Mode';
+        }
+    });
 });
-
-
-

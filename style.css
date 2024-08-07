@@ -1,23 +1,35 @@
+:root {
+  --background-color: #f0f4f8;
+  --text-color: #333;
+  --container-bg-color: #ffffff;
+  --container-border-color: #ccc;
+  --container-hover-bg-color: #f9f9f9;
+  --title-bg-color: #4CAF50;
+  --title-hover-bg-color: #388E3C;
+  --title-text-color: #ffffff;
+  --code-bg-color: #fafafa;
+  --code-text-color: #555;
+  --copy-button-bg-color: #f44336;
+  --copy-button-hover-bg-color: #d32f2f;
+}
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f4f8;
-  color: #333;
+  background-color: var(--background-color);
+  color: var(--text-color);
   margin: 0;
   padding: 20px;
   line-height: 1.6;
 }
 
-
 .pc {
   margin: 20px 0;
-  background-color: #ffffff;
+  background-color: var(--container-bg-color);
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.3s;
 }
-
 
 .pc:hover {
   transform: translateY(-5px);
@@ -25,49 +37,48 @@ body {
 
 .pt {
   cursor: pointer;
-  background-color: #4CAF50;
-  color: white;
+  background-color: var(--title-bg-color);
+  color: var(--title-text-color);
   padding: 15px 20px;
   font-size: 20px;
   font-weight: bold;
-  border-bottom: 1px solid #388E3C;
+  border-bottom: 1px solid var(--container-border-color);
   transition: background-color 0.3s, color 0.3s;
 }
 
 .pt:hover {
-  background-color: #388E3C;
-  color: #fff;
+  background-color: var(--title-hover-bg-color);
+  color: var(--title-text-color);
 }
 
 .p_code {
   display: none;
   padding: 15px 20px;
-  border-left: 5px solid #4CAF50;
-  background-color: #f9f9f9;
+  border-left: 5px solid var(--title-bg-color);
+  background-color: var(--code-bg-color);
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   font-size: 16px;
-  color: #555;
+  color: var(--code-text-color);
   position: relative;
 }
 
-
 pre {
   margin: 0;
-  white-space: pre-wrap; /* Wrap long lines */
+  white-space: pre-wrap;
   font-family: 'Courier New', Courier, monospace;
-  background-color: #f1f1f1;
+  background-color: var(--code-bg-color);
   padding: 10px;
   border-radius: 5px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--container-border-color);
+  color: var(--code-text-color);
 }
-
 
 .copy-button {
   position: absolute;
   top: 15px;
   right: 20px;
-  background-color: #f44336;
+  background-color: var(--copy-button-bg-color);
   color: white;
   border: none;
   padding: 5px 10px;
@@ -78,6 +89,39 @@ pre {
 }
 
 .copy-button:hover {
-  background-color: #d32f2f;
+  background-color: var(--copy-button-hover-bg-color);
+  transform: scale(1.05);
+}
+
+body.dark-mode {
+  --background-color: #121212;
+  --text-color: #e0e0e0;
+  --container-bg-color: #1e1e1e;
+  --container-border-color: #444444;
+  --container-hover-bg-color: #2e2e2e;
+  --title-bg-color: #333333;
+  --title-hover-bg-color: #444444;
+  --title-text-color: #ffffff;
+  --code-bg-color: #1e1e1e;
+  --code-text-color: #c0c0c0;
+  --copy-button-bg-color: #ff5722;
+  --copy-button-hover-bg-color: #e64a19;
+}
+#toggle-theme {
+  background-color: var(--toggle-button-bg-color, #007bff); 
+  color: var(--toggle-button-text-color, #fff); 
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  transition: background-color 0.3s, color 0.3s, transform 0.3s;
+}
+
+
+#toggle-theme:hover {
+  background-color: var(--toggle-button-hover-bg-color, #0056b3); /* Default hover color, can be overridden */
   transform: scale(1.05);
 }
